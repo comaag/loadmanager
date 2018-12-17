@@ -1,0 +1,46 @@
+{
+  "name": "loadmanager",
+  "version": "1.0.0",
+  "description": "A load manager for third party js files.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "node node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comaag/loadmanager.git"
+  },
+  "keywords": [
+    "load",
+    "manager",
+    "loadmanager",
+    "eprivacy"
+  ],
+  "author": "coma AG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comaag/loadmanager/issues"
+  },
+  "homepage": "https://github.com/comaag/loadmanager#readme",
+  "dependencies": {
+    "promise-polyfill": "^8.1.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "jsdom": "^13.1.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^5.2.0",
+    "should": "^13.2.3",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
+  }
+}
