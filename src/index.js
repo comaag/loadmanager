@@ -7,7 +7,7 @@ class loadManager {
 
         this.listener = {};
 
-        this.scriptListener;
+        this.scriptListener = {};
 
         this.options = {
             ...{
@@ -29,15 +29,17 @@ class loadManager {
     getScripts(level = -1) {
         if(level === -1) return this.scripts;
         if(level === 0) return [];
-        return this.scripts.filter((script) => script.level <= level);
+        return this.scripts.filter((script) => (script.level <= level && !script.onRequest));
     }
 
-    addScript({key, path, level = 1, position = 'body'}) {
+    addScript({key, path, level = 1, position = 'body', onRequest = false}) {
         this.scripts.push({
             key: key,
             path: path,
             level: level,
-            position: position
+            position: position,
+            onRequest: onRequest,
+            loaded: false
         });
     }
 
@@ -76,8 +78,9 @@ class loadManager {
         let counter = 0;
         let checkComplete = () => {
             counter++;
+            
             if(counter >= scripts.length) {
-                this.emit('completed');
+                this.emit('complete');
             }
         }
         this.on('loaded', () => checkComplete())
@@ -90,14 +93,30 @@ class loadManager {
         let script = document.createElement('script');
         script.src = data.path;
         script.setAttribute('id', data.key);
-        script.addEventListener('load', (event) => {
-            this.emit('loaded', data);
+        if(script.onRequest) {
+            script.setAttribute('data-onrequest', true);
+        }
+        script.onload = (event) => {
             data.loaded = true;
-        });
-        script.addEventListener('error', (event) => {
-            this.emit('error', data);
+            this.scripts = this.scripts.map((s) => {
+                if(s.key == data.key ) {
+                    s.loaded = true;
+                }
+                return s;
+            });
+            this.emit('loaded', data);
+            
+        };
+        script.onerror = (event) => {
             data.loaded = false;
-        });
+            this.scripts = this.scripts.map((s) => {
+                if(s.key == data.key ) {
+                    s.loaded = false;
+                }
+                return s;
+            });
+            this.emit('error', data);
+        };
         
         if(data.position == 'body') {
             document.body.appendChild(script);    
@@ -109,11 +128,22 @@ class loadManager {
 
     // SCRIPT LISTENERS
     whenever(key) {
-        return new Promise(function(resolve, reject) {
-            if(this.scripts.filter((script) => script.key === key && script.loaded === true).length >= 1) {
+        return new Promise((resolve, reject) => {
+            let script = this.scripts.filter((script) => script.key == key)[0];
+            if(script.loaded) {
                 resolve()
             }
             else {
+                // onRequest
+                // check if the script is allowed to be loaded
+                if(script.onRequest) {
+                    let level = this.getLevel();
+                    if(level >= script.level) {
+                        this.addToDom(script);
+                    }
+                }
+                
+                this.scriptListener[key] = this.scriptListener[key] || [];
                 this.scriptListener[key].push(resolve);
             }
         });
@@ -146,7 +176,7 @@ class loadManager {
 
     emit(name, data) {
         if(!this.listener[name]) return;
-        this.listener[name].foreach((listener) => listener(data));
+        this.listener[name].forEach((listener) => listener(data));
     }
 
 

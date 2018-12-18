@@ -11,16 +11,23 @@ First of all you have to register all your third party scripts.
     let manager = new loadManager();
 
 #### Register Scripts
-register the thirdparty scripts and cluster them in privacy security levels (`1,2,3`)
+register the thirdparty scripts and cluster them in privacy security levels (`1,2,3`) [Read the definiton](#levels)
 
     manager.setScripts([
         {
             key: 'unique-key',
             path: '/path/to/library.js',
-            level: 1, // optional (default: 1)
-            position: 'head' // optional (default: body),
+            level: 1,
+            position: 'head' 
+            onRequest: false
         }
     ]);
+
+- `key` : is the unique key for the script. it will be used to identify the script.
+- `path` : is the path or url to the script
+- `level` : defines the security level of the script (default: `1`) [Read the definition](#levels)
+- `position` : set the position where the script should be integrated `head` or `body` (default: `body`)
+- `onRequest` : `false` - whenever the `load` method will be called. `true` - whenever you call the `whenever` method (default: `false`)
 
 if you want to add a single script later in your script or have some conditions to be true, you could also use:
 
@@ -51,7 +58,7 @@ Example:
 
 > the `load(int level)` method will set a cookie including the given value called `_lm_level`. if you want to avoid that you could set the option `no_cookie` to true on initialization of the loadManager
 
-#### Levels
+#### Levels <a name="levels"></a>
 The levels are defined as:
 
 - `-1` : load everything from the scripts object
@@ -116,35 +123,3 @@ The callback gets the `scripts` object of all loaded scripts and the `level` int
         // do your stuff
     })
 
-
-
-### Common JS way
-
-    var loadManager = require('loadmanager');
-
-    var manager = new loadManager();
-
-register the thirdparty scripts and cluster them in privacy security levels (`1,2,3`)
-
-    manager.setScripts([
-        {
-            key: 'unique-key',
-            path: '/path/to/library.js',
-            level: 1
-        }
-    ]);
-
-You can also use the success and failure params instead of the promise pattern for scripts lower than ES6
-
-     manager.has('unique-key', 
-        // on success
-        function () {
-            // do your stuff
-        },
-        // on failure
-        function () {
-            // do other stuff without the library
-        }
-    );
-
-> and so on ...

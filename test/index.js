@@ -1,6 +1,11 @@
+import jsdomGlobal from 'jsdom-global';
 import scriptsTests from './scriptsTests';
 import loadTests from './loadTests';
 
+before(() => jsdomGlobal('', { 
+    runScripts: "dangerously",
+    resources: "usable"
+}));
 
 const multipleScripts = [
     {

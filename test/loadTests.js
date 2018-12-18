@@ -37,5 +37,71 @@ export default function (scripts) {
                 done();
             });
         });
+
+        describe('#on(loaded)', function() {
+            it('should wait until the script is loaded without error', function(done) {
+                var manager = new loadManager;
+
+                // set scripts
+                manager.setScripts(scripts);
+
+                manager.on('loaded', (script) => {
+                    done();
+                });
+
+                manager.on('error', (script) => {
+                    done(new Error('loaded failed'));
+                });
+
+                manager.load(1);
+            });
+        });
+
+        describe('#on(complete)', function() {
+            it('should wait until all scripts are loaded without error', function(done) {
+                var manager = new loadManager;
+
+                // set scripts
+                manager.setScripts(scripts);
+
+                manager.on('complete', (script) => {
+                    done();
+                });
+
+                manager.load(1);
+            });
+        });
+
+        describe('#whenever (listen before loaded)', function() {
+            it('should wait until the requested script is loaded without error', function(done) {
+                var manager = new loadManager;
+
+                // set scripts
+                manager.setScripts(scripts);
+
+                manager.whenever('cdn-jquery-1').then(() => {
+                    done();
+                });
+
+                manager.load(1);
+            });
+        });
+
+        describe('#whenever (listen after the script is loaded)', function() {
+            it('should execute immediatly without error', function(done) {
+                var manager = new loadManager;
+
+                // set scripts
+                manager.setScripts(scripts);
+
+                manager.on('complete', () => {
+                    manager.whenever('cdn-jquery-1').then(() => {
+                        done();
+                    });
+                })
+                
+                manager.load(1);
+            });
+        });
     });
 }
