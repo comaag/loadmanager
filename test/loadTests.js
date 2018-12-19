@@ -103,5 +103,23 @@ export default function (scripts) {
                 manager.load(1);
             });
         });
+
+        describe('#whenever (on request)', function() {
+            it('should load the script and execute afterwards without error', function(done) {
+                var manager = new loadManager;
+
+                
+                scripts[0].onRequest = true;
+
+                // set scripts
+                manager.setScripts(scripts);
+
+                manager.whenever('cdn-jquery-1').then(() => {
+                    done();
+                });
+                
+                manager.load(1);
+            });
+        });
     });
 }

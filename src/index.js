@@ -76,15 +76,17 @@ class loadManager {
         scripts.forEach((script) => this.addToDom(script));
 
         let counter = 0;
-        let checkComplete = () => {
+        let checkComplete = (script) => {
+            if(script.onRequest) return;
+
             counter++;
             
             if(counter >= scripts.length) {
                 this.emit('complete');
             }
         }
-        this.on('loaded', () => checkComplete())
-        this.on('error', () => checkComplete())
+        this.on('loaded', (script) => checkComplete(script))
+        this.on('error', (script) => checkComplete(script))
     }
 
     addToDom(data) {
@@ -133,7 +135,7 @@ class loadManager {
             if(script.loaded) {
                 resolve()
             }
-            else {
+            else if(script.onRequest) {
                 // onRequest
                 // check if the script is allowed to be loaded
                 if(script.onRequest) {
@@ -141,8 +143,14 @@ class loadManager {
                     if(level >= script.level) {
                         this.addToDom(script);
                     }
+                    this.on('loaded', (script) => {
+                        if(script.key == key) {
+                            resolve();
+                        }
+                    })
                 }
-                
+            }
+            else {
                 this.scriptListener[key] = this.scriptListener[key] || [];
                 this.scriptListener[key].push(resolve);
             }
@@ -164,6 +172,7 @@ class loadManager {
         for(let key in this.scriptListener) {
             this.scriptListener[key].forEach((callback) => callback());
         }
+        this.scriptListener = {};
     }
 
     // EVENT HANDLING
