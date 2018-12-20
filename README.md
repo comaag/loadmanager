@@ -117,9 +117,9 @@ The ``script` object does have the same values that you configured in the setScr
 
 ##### 2. complete
 
-The callback gets the `scripts` object of all loaded scripts and the `level` integer, which was defined
+Will be called when all scripts are loaded.
 
-    manager.on('complete', (scripts, level) => {
+    manager.on('complete', () => {
         // do your stuff
     })
 

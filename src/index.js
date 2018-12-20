@@ -66,7 +66,7 @@ class loadManager {
     }
  
     // Load
-    load(level = -1) {
+    load(level = 0) {
         this.setLevel(level);
 
         if(level == 0) return;
