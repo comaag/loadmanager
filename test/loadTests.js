@@ -83,6 +83,8 @@ export default function (scripts) {
                     done();
                 });
 
+                
+
                 manager.load(1);
             });
         });
