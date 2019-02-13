@@ -81,7 +81,7 @@ class loadManager {
 
             counter++;
             
-            if(counter >= scripts.filter((script) => !script.onRequest).length) {
+            if(counter >= scripts.filter({onRequest:false}).length) {
                 this.emit('complete');
             }
         }
