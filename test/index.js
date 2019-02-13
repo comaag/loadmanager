@@ -11,7 +11,7 @@ const multipleScripts = [
     {
         key: 'cdn-jquery-1',
         path: 'https://code.jquery.com/jquery-3.3.1.min.js',
-        level: 1
+        level: 1,
     },
     {
         key: 'cdn-jquery-2',

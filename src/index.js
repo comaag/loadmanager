@@ -26,10 +26,18 @@ class loadManager {
         }
     }
 
-    getScripts(level = -1) {
+    getScripts(level = -1, withOnRequestScripts = true) {
         if(level === -1) return this.scripts;
         if(level === 0) return [];
-        return this.scripts.filter((script) => (script.level <= level && !script.onRequest));
+        return this.scripts.filter((script) => {
+            if(withOnRequestScripts) {
+                return (script.level <= level)
+            }
+            else {
+                return (script.level <= level && !script.onRequest)
+            }
+            
+        });
     }
 
     addScript({key, path, level = 1, position = 'body', onRequest = false}) {
@@ -71,7 +79,7 @@ class loadManager {
 
         if(level == 0) return;
 
-        let scripts = this.getScripts(level);
+        let scripts = this.getScripts(level, false);
 
         scripts.forEach((script) => this.addToDom(script));
 
@@ -81,7 +89,7 @@ class loadManager {
 
             counter++;
             
-            if(counter >= scripts.filter({onRequest:false}).length) {
+            if(counter >= scripts.filter((script) => !script.onRequest).length) {
                 this.emit('complete');
             }
         }
